@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HTML Sitemap | Oahu Fishing Guides</title>
+<meta name="description" content="Complete HTML sitemap for OahuFishingGuides.com — navigate all sections covering Oahu fishing spots, species, charters, FAQ, and more.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://oahufishingguides.com/sitemap-html.html">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='16' fill='%230a2a4a'/><text y='.9em' font-size='75' x='10'>🐟</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --navy: #0a1628;
+  --ocean: #0d3b6e;
+  --blue: #1565c0;
+  --aqua: #00b4d8;
+  --teal: #00e5c3;
+  --coral: #ff6b47;
+  --offwhite: #f8f9fa;
+  --muted: #5a6a7e;
+  --ff-head: 'Bebas Neue', sans-serif;
+  --ff-body: 'Inter', sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--ff-body);
+  background: var(--offwhite);
+  color: #1a2332;
+}
+
+/* Header */
+#site-header {
+  background: #fff;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.1);
+  padding: 0 24px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.header-logo img {
+  width: 220px;
+  max-height: 52px;
+  object-fit: contain;
+}
+.header-back {
+  font-size: 14px;
+  color: var(--blue);
+  text-decoration: none;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.header-back:hover { color: var(--aqua); }
+
+/* Hero bar */
+.sitemap-hero {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--ocean) 100%);
+  padding: 56px 24px 48px;
+  text-align: center;
+}
+.sitemap-hero h1 {
+  font-family: var(--ff-head);
+  font-size: clamp(40px, 6vw, 72px);
+  color: #fff;
+  letter-spacing: 0.04em;
+  margin-bottom: 12px;
+}
+.sitemap-hero h1 span { color: var(--aqua); }
+.sitemap-hero p {
+  font-size: 16px;
+  color: rgba(255,255,255,0.65);
+  max-width: 560px;
+  margin: 0 auto;
+  line-height: 1.7;
+}
+
+/* Breadcrumb */
+.breadcrumb {
+  background: #fff;
+  border-bottom: 1px solid #e8edf2;
+  padding: 10px 24px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.breadcrumb a { color: var(--blue); text-decoration: none; }
+.breadcrumb a:hover { text-decoration: underline; }
+.breadcrumb span { margin: 0 6px; }
+
+/* Main layout */
+main {
+  max-width: 1100px;
+  margin: 48px auto;
+  padding: 0 24px 80px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+}
+
+.sitemap-card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 28px 24px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+  border-top: 4px solid var(--aqua);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.sitemap-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+}
+.sitemap-card.accent-coral { border-top-color: var(--coral); }
+.sitemap-card.accent-teal  { border-top-color: var(--teal); }
+.sitemap-card.accent-navy  { border-top-color: var(--navy); }
+.sitemap-card.accent-blue  { border-top-color: var(--blue); }
+
+.sitemap-card h2 {
+  font-family: var(--ff-head);
+  font-size: 22px;
+  color: var(--navy);
+  letter-spacing: 0.05em;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sitemap-card ul {
+  list-style: none;
+  padding: 0;
+}
+.sitemap-card ul li {
+  border-bottom: 1px solid #f0f4f8;
+  padding: 9px 0;
+}
+.sitemap-card ul li:last-child { border-bottom: none; }
+.sitemap-card ul li a {
+  color: var(--blue);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: color 0.2s;
+}
+.sitemap-card ul li a:hover { color: var(--coral); }
+.sitemap-card ul li a::before {
+  content: '→';
+  color: var(--aqua);
+  font-size: 12px;
+  flex-shrink: 0;
+}
+.sitemap-card ul li small {
+  display: block;
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 2px;
+  margin-left: 20px;
+}
+
+/* Wide card */
+.sitemap-card.wide {
+  grid-column: span 3;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0 32px;
+}
+.sitemap-card.wide h2 { grid-column: span 3; }
+
+/* Footer */
+#site-footer {
+  background: var(--navy);
+  color: rgba(255,255,255,0.6);
+  padding: 36px 24px;
+  text-align: center;
+  font-size: 14px;
+}
+#site-footer a { color: var(--teal); text-decoration: none; margin: 0 10px; }
+#site-footer a:hover { text-decoration: underline; }
+#site-footer .footer-links { margin-top: 12px; }
+
+@media (max-width: 900px) {
+  main { grid-template-columns: 1fr 1fr; }
+  .sitemap-card.wide { grid-column: span 2; }
+  .sitemap-card.wide { grid-template-columns: 1fr 1fr; }
+  .sitemap-card.wide h2 { grid-column: span 2; }
+}
+@media (max-width: 600px) {
+  main { grid-template-columns: 1fr; }
+  .sitemap-card.wide { grid-column: span 1; grid-template-columns: 1fr; }
+  .sitemap-card.wide h2 { grid-column: span 1; }
+}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header id="site-header">
+  <a href="/" class="header-logo">
+    <img src="https://raw.githubusercontent.com/seniorhelper/oahufishingguides.com/main/images/oahu-fishing-guides-logo.png"
+         alt="Oahu Fishing Guides Logo" width="220">
+  </a>
+  <a href="/" class="header-back">← Back to Home</a>
+</header>
+
+<!-- Hero -->
+<div class="sitemap-hero">
+  <h1>HTML <span>Sitemap</span></h1>
+  <p>Every section and page on OahuFishingGuides.com — organized for easy navigation.</p>
+</div>
+
+<!-- Breadcrumb -->
+<div class="breadcrumb">
+  <a href="/">Home</a>
+  <span>›</span>
+  <span aria-current="page">HTML Sitemap</span>
+</div>
+
+<!-- Sitemap Grid -->
+<main>
+
+  <!-- Main Pages -->
+  <div class="sitemap-card accent-coral">
+    <h2>🏠 Main Pages</h2>
+    <ul>
+      <li>
+        <a href="/">Home — Oahu Fishing Guides</a>
+        <small>Full guide, hero, all sections</small>
+      </li>
+      <li>
+        <a href="sitemap-html.html">HTML Sitemap</a>
+        <small>This page</small>
+      </li>
+      <li>
+        <a href="sitemap.xml">XML Sitemap</a>
+        <small>For search engine crawlers</small>
+      </li>
+      <li>
+        <a href="robots.txt">Robots.txt</a>
+        <small>Crawler permissions & AI access</small>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Page Sections -->
+  <div class="sitemap-card">
+    <h2>📍 Page Sections</h2>
+    <ul>
+      <li>
+        <a href="/#about">About Oahu Fishing</a>
+        <small>World-class fishing, stats, island overview</small>
+      </li>
+      <li>
+        <a href="/#spots">Best Fishing Spots</a>
+        <small>Haleiwa, Kewalo, Waianae, Ko Olina & more</small>
+      </li>
+      <li>
+        <a href="/#species">Fish Species & Seasons</a>
+        <small>Full species table with peak timing</small>
+      </li>
+      <li>
+        <a href="/#guide">Deep Sea Fishing Guide</a>
+        <small>Harbors, charters, licensing, month-by-month</small>
+      </li>
+      <li>
+        <a href="/#faq">FAQ — 20 Questions</a>
+        <small>Everything anglers need to know</small>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Fishing Spots -->
+  <div class="sitemap-card accent-teal">
+    <h2>🎣 Fishing Spots Covered</h2>
+    <ul>
+      <li><a href="/#spots">Haleiwa Harbor — North Shore</a></li>
+      <li><a href="/#spots">Kewalo Basin — Honolulu</a></li>
+      <li><a href="/#spots">Waianae — Leeward Side</a></li>
+      <li><a href="/#spots">Ko Olina Marina — West Oahu</a></li>
+      <li><a href="/#spots">Bamboo Ridge — Diamond Head</a></li>
+      <li><a href="/#spots">Lake Wilson — Wahiawa (Freshwater)</a></li>
+    </ul>
+  </div>
+
+  <!-- Fish Species (wide card spanning all 3 cols) -->
+  <div class="sitemap-card wide accent-navy">
+    <h2>🐟 Fish Species Guide</h2>
+    <ul>
+      <li><a href="/#species">Pacific Blue Marlin (A'u) — Peak: May–September</a></li>
+      <li><a href="/#species">Yellowfin Tuna / Ahi — Peak: April–December</a></li>
+      <li><a href="/#species">Mahi Mahi — Year-round, peak spring & fall</a></li>
+    </ul>
+    <ul>
+      <li><a href="/#species">Wahoo / Ono — Peak: May–October</a></li>
+      <li><a href="/#species">Striped Marlin — Peak: November–March</a></li>
+      <li><a href="/#species">Bigeye Tuna — Peak: January–March</a></li>
+    </ul>
+    <ul>
+      <li><a href="/#species">Skipjack Tuna / Aku — Year-round</a></li>
+      <li><a href="/#species">Giant Trevally / Ulua — Year-round</a></li>
+      <li><a href="/#species">Bonefish / O'io — Year-round (flats)</a></li>
+      <li><a href="/#species">Peacock Bass — April–October (freshwater)</a></li>
+    </ul>
+  </div>
+
+  <!-- FAQ Topics -->
+  <div class="sitemap-card accent-blue">
+    <h2>❓ FAQ Topics</h2>
+    <ul>
+      <li><a href="/#faq">What fish can you catch in Oahu?</a></li>
+      <li><a href="/#faq">Do you need a fishing license?</a></li>
+      <li><a href="/#faq">Best time to go fishing in Oahu</a></li>
+      <li><a href="/#faq">How much do charters cost?</a></li>
+      <li><a href="/#faq">Where do charters depart from?</a></li>
+      <li><a href="/#faq">Can beginners go deep sea fishing?</a></li>
+      <li><a href="/#faq">Shore fishing spots in Oahu</a></li>
+      <li><a href="/#faq">What is Bamboo Ridge fishing?</a></li>
+      <li><a href="/#faq">What are FADs?</a></li>
+      <li><a href="/#faq">How to advertise on this site</a></li>
+    </ul>
+  </div>
+
+  <!-- External Resources -->
+  <div class="sitemap-card">
+    <h2>🔗 Partner Resources</h2>
+    <ul>
+      <li>
+        <a href="https://www.bigislandseo.com" target="_blank" rel="noopener">BigIslandSEO.com</a>
+        <small>Hawaii SEO, AIO &amp; GEO services — Eye To Ad Media</small>
+      </li>
+      <li>
+        <a href="https://eyetoad.com" target="_blank" rel="noopener">Eye To Ad Media</a>
+        <small>Digital marketing, web design, SEO agency</small>
+      </li>
+      <li>
+        <a href="mailto:info@honoluluscubacompany.com">Honolulu Scuba Company</a>
+        <small>Partner — Oahu scuba diving experiences</small>
+      </li>
+      <li>
+        <a href="mailto:sales@eyetoad.com">Advertise on This Site</a>
+        <small>Banner, skyscraper, sponsored content</small>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Contact / Advertising -->
+  <div class="sitemap-card accent-coral">
+    <h2>📢 Advertising & Contact</h2>
+    <ul>
+      <li>
+        <a href="/#featured-ad">Featured Top Banner Slot</a>
+        <small>Prime above-the-fold placement</small>
+      </li>
+      <li>
+        <a href="/#guide">Skyscraper Sidebar Ad</a>
+        <small>Sticky sidebar inside the guide section</small>
+      </li>
+      <li>
+        <a href="/#faq">Footer Banner Ad</a>
+        <small>Full-width banner before the footer</small>
+      </li>
+      <li>
+        <a href="mailto:sales@eyetoad.com?subject=Advertising%20Inquiry%20-%20OahuFishingGuides">Email: sales@eyetoad.com</a>
+        <small>Get ad rates and availability</small>
+      </li>
+      <li>
+        <a href="tel:18004818638">Call: 1-800-481-8638</a>
+        <small>Eye To Ad Media — toll free</small>
+      </li>
+    </ul>
+  </div>
+
+</main>
+
+<!-- Footer -->
+<footer id="site-footer">
+  <p>© 2026 OahuFishingGuides.com — All Rights Reserved</p>
+  <div class="footer-links">
+    <a href="/">Home</a>
+    <a href="sitemap.xml">XML Sitemap</a>
+    <a href="robots.txt">Robots.txt</a>
+    <a href="https://eyetoad.com" target="_blank" rel="noopener">Powered by Eye To Ad Media</a>
+  </div>
+</footer>
+
+<!-- Schema for this page -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://oahufishingguides.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "HTML Sitemap",
+      "item": "https://oahufishingguides.com/sitemap-html.html"
+    }
+  ]
+}
+</script>
+
+</body>
+</html>
