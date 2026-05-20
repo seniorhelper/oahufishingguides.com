@@ -184,7 +184,7 @@ body {
 #site-header {
   position: fixed;
   top: 0; left: 0; right: 0;
-  height: 72px;
+  height: 80px;
   background: #ffffff;
   box-shadow: 0 2px 20px rgba(0,0,0,0.12);
   z-index: 1000;
@@ -194,13 +194,20 @@ body {
   padding: 0 24px;
 }
 
+.header-logo {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  height: 80px;
+}
+
 .header-logo img {
+  display: block;
   width: 260px;
   max-width: 260px;
-  max-height: 52px;
-  height: auto;
-  display: block;
+  height: 60px;
   object-fit: contain;
+  object-position: left center;
 }
 
 .header-nav {
@@ -223,38 +230,49 @@ body {
 .hamburger {
   display: none;
   flex-direction: column;
-  gap: 5px;
+  gap: 6px;
   cursor: pointer;
   background: none;
   border: none;
-  padding: 8px;
+  padding: 10px;
+  flex: 0 0 auto;
+  z-index: 1001;
 }
 
 .hamburger span {
   display: block;
-  width: 26px;
-  height: 2.5px;
+  width: 28px;
+  height: 3px;
   background: var(--navy);
   border-radius: 2px;
   transition: all 0.3s;
 }
 
-.hamburger.open span:nth-child(1) { transform: translateY(7.5px) rotate(45deg); }
-.hamburger.open span:nth-child(2) { opacity: 0; }
-.hamburger.open span:nth-child(3) { transform: translateY(-7.5px) rotate(-45deg); }
+.hamburger.open span:nth-child(1) { transform: translateY(9px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+.hamburger.open span:nth-child(3) { transform: translateY(-9px) rotate(-45deg); }
 
 .mobile-menu {
-  display: none;
   position: fixed;
-  top: 72px; left: 0; right: 0;
+  top: 80px; left: 0; right: 0;
   background: var(--navy);
-  padding: 20px 24px 28px;
+  padding: 0 24px;
   z-index: 999;
   flex-direction: column;
   gap: 0;
+  /* Hidden by default — transform off-screen, no display toggle = no reflow */
+  transform: translateY(-100%);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.32s cubic-bezier(0.4,0,0.2,1), opacity 0.25s ease;
+  display: flex;
 }
 
-.mobile-menu.open { display: flex; }
+.mobile-menu.open {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
 
 .mobile-menu a {
   display: block;
@@ -262,10 +280,13 @@ body {
   text-decoration: none;
   font-size: 18px;
   font-weight: 500;
-  padding: 14px 0;
+  padding: 16px 0;
   border-bottom: 1px solid rgba(255,255,255,0.1);
   transition: color 0.2s;
 }
+
+.mobile-menu a:last-child { border-bottom: none; padding-bottom: 24px; }
+.mobile-menu a:first-child { padding-top: 20px; }
 
 .mobile-menu a:hover { color: var(--aqua); }
 
@@ -278,7 +299,7 @@ body {
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  padding-top: 72px;
+  padding-top: 80px;
 }
 
 #hero-video {
@@ -763,7 +784,7 @@ table.species-table {
 
 .sidebar-ad {
   position: sticky;
-  top: 90px;
+  top: 96px;
 }
 
 .skyscraper-ad {
@@ -1312,11 +1333,16 @@ table.species-table {
   .footer-banner-inner { flex-direction: column; text-align: center; }
   .hero-btns { flex-direction: column; align-items: center; }
   .about-stats { grid-template-columns: 1fr; }
+  /* Ensure header stays exactly 80px — no shrink */
+  #site-header { height: 80px; min-height: 80px; }
+  .header-logo { height: 80px; }
+  .header-logo img { width: 220px; max-width: 220px; }
 }
 
 @media (max-width: 480px) {
   .hero-title { font-size: 52px; }
   section { padding: 60px 20px; }
+  .header-logo img { width: 180px; max-width: 180px; }
 }
 </style>
 </head>
@@ -1987,409 +2013,390 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
   });
 });
 
-// ── Realistic Canvas Fish Jump Animation ──
+// ── Realistic Canvas Fish Jump Animation — True U-Arc ──
 (function() {
   const canvas = document.getElementById('fishCanvas');
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
   const W = canvas.width;
   const H = canvas.height;
-  const waterY = H * 0.62; // water surface Y
-
-  // Physics state
-  let t = 0;           // global time in seconds
-  let fishX = W / 2;
-  let fishY = waterY;
-  let fishVY = 0;
-  let fishAngle = 0;
-  let phase = 'wait';  // wait | launch | air | reentry | submerge
-  let phaseTimer = 0;
-  let waitDuration = 1.2;
-  let launchVY = 0;
-  const gravity = 980; // px/s²
-
-  // Splash droplets
-  let droplets = [];
-
-  function spawnSplash(x, y, direction) {
-    for (let i = 0; i < 14; i++) {
-      const angle = -Math.PI / 2 + (Math.random() - 0.5) * Math.PI * 0.9;
-      const speed = 80 + Math.random() * 220;
-      droplets.push({
-        x, y,
-        vx: Math.cos(angle) * speed * (direction || 1),
-        vy: Math.sin(angle) * speed - 60,
-        life: 1.0,
-        size: 2 + Math.random() * 4
-      });
-    }
-  }
+  const waterY = H * 0.60; // water surface Y
 
   // Wave state
   let waveOffset = 0;
 
-  function drawWater() {
-    // Deep ocean gradient
-    const grad = ctx.createLinearGradient(0, waterY, 0, H);
-    grad.addColorStop(0, '#0096c7');
-    grad.addColorStop(0.4, '#0077b6');
-    grad.addColorStop(1, '#023e8a');
-    ctx.fillStyle = grad;
+  // ── Droplets ──
+  let droplets = [];
+  function spawnSplash(x, y, vxBase) {
+    for (let i = 0; i < 18; i++) {
+      const spread = (Math.random() - 0.5) * Math.PI * 0.85;
+      const speed = 90 + Math.random() * 260;
+      droplets.push({
+        x, y,
+        vx: Math.cos(-Math.PI / 2 + spread) * speed + vxBase * 0.4,
+        vy: Math.sin(-Math.PI / 2 + spread) * speed - 40,
+        life: 1.0,
+        decay: 1.0 + Math.random() * 0.6,
+        size: 2 + Math.random() * 5,
+        color: Math.random() > 0.5 ? '#48cae4' : '#90e0ef'
+      });
+    }
+  }
 
+  // ── Ripple rings ──
+  let rings = [];
+  function spawnRings(x, y) {
+    rings.push({ x, y, age: 0, maxAge: 1.4 });
+    rings.push({ x, y, age: -0.18, maxAge: 1.4 });
+  }
+
+  // ── Draw helpers ──
+  function drawSky() {
+    const sg = ctx.createLinearGradient(0, 0, 0, waterY);
+    sg.addColorStop(0, '#6ec6ea');
+    sg.addColorStop(0.55, '#b2dff5');
+    sg.addColorStop(1, '#d4f1ff');
+    ctx.fillStyle = sg;
+    ctx.fillRect(0, 0, W, waterY + 6);
+
+    // Sun
+    const sx = W * 0.83, sy = waterY * 0.15;
+    const sgr = ctx.createRadialGradient(sx, sy, 0, sx, sy, 68);
+    sgr.addColorStop(0, 'rgba(255,245,120,0.95)');
+    sgr.addColorStop(0.28, 'rgba(255,218,60,0.55)');
+    sgr.addColorStop(1, 'rgba(255,200,0,0)');
+    ctx.fillStyle = sgr;
+    ctx.beginPath(); ctx.arc(sx, sy, 68, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#fff9c8';
+    ctx.beginPath(); ctx.arc(sx, sy, 17, 0, Math.PI * 2); ctx.fill();
+
+    // Sun path reflection on water
+    ctx.save();
+    ctx.globalAlpha = 0.16;
+    for (let ri = 0; ri < 5; ri++) {
+      const rw = 4 + ri * 2;
+      const rx = sx - rw / 2 + Math.sin(waveOffset * 1.5 + ri) * 8;
+      const ry = waterY + 6 + ri * 9;
+      ctx.fillStyle = '#fffde0';
+      ctx.beginPath();
+      ctx.ellipse(rx, ry, rw * (1 + ri * 0.4), 3, 0, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  function drawWater() {
+    const wg = ctx.createLinearGradient(0, waterY, 0, H);
+    wg.addColorStop(0, '#0099cc');
+    wg.addColorStop(0.35, '#0077b6');
+    wg.addColorStop(1, '#023e8a');
+    ctx.fillStyle = wg;
     ctx.beginPath();
     ctx.moveTo(0, H);
-    // Animated sine surface
-    for (let x = 0; x <= W; x += 4) {
-      const waveAmp = 5;
-      const y = waterY
-        + Math.sin((x / 80) + waveOffset) * waveAmp
-        + Math.sin((x / 40) + waveOffset * 1.7) * (waveAmp * 0.4);
-      if (x === 0) ctx.lineTo(x, y);
-      else ctx.lineTo(x, y);
+    for (let x = 0; x <= W; x += 3) {
+      const wy = waterY
+        + Math.sin((x / 75) + waveOffset) * 5
+        + Math.sin((x / 38) + waveOffset * 1.8) * 2.2;
+      x === 0 ? ctx.moveTo(x, wy) : ctx.lineTo(x, wy);
     }
-    ctx.lineTo(W, H);
-    ctx.closePath();
-    ctx.fill();
+    ctx.lineTo(W, H); ctx.closePath(); ctx.fill();
 
-    // Surface shimmer line
-    ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+    // Surface shimmer
+    ctx.strokeStyle = 'rgba(255,255,255,0.38)';
     ctx.lineWidth = 1.5;
     ctx.beginPath();
-    for (let x = 0; x <= W; x += 4) {
-      const y = waterY
-        + Math.sin((x / 80) + waveOffset) * 5
-        + Math.sin((x / 40) + waveOffset * 1.7) * 2;
-      x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    for (let x = 0; x <= W; x += 3) {
+      const wy = waterY
+        + Math.sin((x / 75) + waveOffset) * 5
+        + Math.sin((x / 38) + waveOffset * 1.8) * 2.2;
+      x === 0 ? ctx.moveTo(x, wy) : ctx.lineTo(x, wy);
     }
     ctx.stroke();
 
-    // Caustic highlights in water
-    ctx.save();
-    ctx.globalAlpha = 0.08;
-    for (let i = 0; i < 6; i++) {
-      const cx = 60 + i * 70 + Math.sin(waveOffset + i) * 20;
-      const cy = waterY + 30 + Math.cos(waveOffset * 0.7 + i) * 15;
-      const rg = ctx.createRadialGradient(cx, cy, 0, cx, cy, 35);
-      rg.addColorStop(0, '#ffffff');
-      rg.addColorStop(1, 'transparent');
-      ctx.fillStyle = rg;
+    // Caustic blobs
+    ctx.save(); ctx.globalAlpha = 0.07;
+    for (let i = 0; i < 7; i++) {
+      const bx = 40 + i * 65 + Math.sin(waveOffset * 0.9 + i * 1.3) * 22;
+      const by = waterY + 28 + Math.cos(waveOffset * 0.6 + i) * 14;
+      const br = ctx.createRadialGradient(bx, by, 0, bx, by, 32);
+      br.addColorStop(0, '#fff'); br.addColorStop(1, 'transparent');
+      ctx.fillStyle = br;
       ctx.beginPath();
-      ctx.ellipse(cx, cy, 35, 12, Math.sin(waveOffset + i) * 0.5, 0, Math.PI * 2);
+      ctx.ellipse(bx, by, 32, 11, Math.sin(waveOffset + i * 0.7) * 0.4, 0, Math.PI * 2);
       ctx.fill();
     }
     ctx.restore();
   }
 
-  function drawSky() {
-    // Sky gradient
-    const skyGrad = ctx.createLinearGradient(0, 0, 0, waterY);
-    skyGrad.addColorStop(0, '#87ceeb');
-    skyGrad.addColorStop(0.6, '#b8e4f7');
-    skyGrad.addColorStop(1, '#d0f0ff');
-    ctx.fillStyle = skyGrad;
-    ctx.fillRect(0, 0, W, waterY + 10);
-
-    // Sun glow
-    const sunX = W * 0.82, sunY = waterY * 0.18;
-    const sunGrad = ctx.createRadialGradient(sunX, sunY, 0, sunX, sunY, 60);
-    sunGrad.addColorStop(0, 'rgba(255,240,100,0.9)');
-    sunGrad.addColorStop(0.3, 'rgba(255,210,60,0.5)');
-    sunGrad.addColorStop(1, 'rgba(255,200,0,0)');
-    ctx.fillStyle = sunGrad;
-    ctx.beginPath();
-    ctx.arc(sunX, sunY, 60, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Sun disc
-    ctx.fillStyle = '#fff8c0';
-    ctx.beginPath();
-    ctx.arc(sunX, sunY, 16, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Light reflection on water
-    ctx.save();
-    ctx.globalAlpha = 0.18;
-    const refGrad = ctx.createLinearGradient(sunX - 30, waterY - 10, sunX + 30, waterY + 40);
-    refGrad.addColorStop(0, '#fff8c0');
-    refGrad.addColorStop(1, 'transparent');
-    ctx.fillStyle = refGrad;
-    ctx.beginPath();
-    ctx.ellipse(sunX + 5, waterY + 8, 22 + Math.sin(waveOffset * 2) * 4, 10, 0, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.restore();
+  function drawRingsAll(dt) {
+    rings.forEach(r => { r.age += dt; });
+    rings = rings.filter(r => r.age < r.maxAge);
+    rings.forEach(r => {
+      const p = r.age / r.maxAge;
+      if (p <= 0) return;
+      const maxR = 60;
+      ctx.save();
+      ctx.globalAlpha = (1 - p) * 0.52;
+      ctx.strokeStyle = '#90e0ef';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.ellipse(r.x, r.y, maxR * p, maxR * p * 0.3, 0, 0, Math.PI * 2);
+      ctx.stroke();
+      if (p < 0.65) {
+        ctx.globalAlpha = ((0.65 - p) / 0.65) * 0.28;
+        ctx.beginPath();
+        ctx.ellipse(r.x, r.y, maxR * p * 0.5, maxR * p * 0.15, 0, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+      ctx.restore();
+    });
   }
 
-  function drawFish(x, y, angle, scale) {
+  function drawDropletsAll(dt) {
+    const G = 900;
+    droplets.forEach(d => {
+      d.x += d.vx * dt;
+      d.y += d.vy * dt;
+      d.vy += G * dt;
+      d.life -= d.decay * dt;
+      if (d.life > 0) {
+        ctx.save();
+        ctx.globalAlpha = Math.min(d.life, 0.9);
+        ctx.fillStyle = d.color;
+        ctx.beginPath();
+        ctx.arc(d.x, d.y, Math.max(0.5, d.size * d.life), 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+    });
+    droplets = droplets.filter(d => d.life > 0 && d.y < H + 30);
+  }
+
+  function drawFish(x, y, angle) {
     ctx.save();
     ctx.translate(x, y);
     ctx.rotate(angle);
-    ctx.scale(scale, scale);
 
-    // Shadow underneath (when above water)
-    if (y < waterY - 10) {
-      const shadowY = waterY - y + 20;
-      ctx.save();
-      ctx.globalAlpha = Math.max(0, 0.25 - (waterY - y) / 400);
-      ctx.fillStyle = '#023e8a';
-      ctx.beginPath();
-      ctx.ellipse(0, shadowY, 28, 7, 0, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.restore();
-    }
-
-    // Tail fin (forked)
-    ctx.fillStyle = '#0077b6';
+    // Tail
+    ctx.fillStyle = '#005f8e';
     ctx.beginPath();
-    ctx.moveTo(28, 0);
-    ctx.lineTo(50, -14);
-    ctx.lineTo(46, 0);
-    ctx.lineTo(50, 14);
+    ctx.moveTo(30, 0);
+    ctx.lineTo(54, -16);
+    ctx.lineTo(49, 0);
+    ctx.lineTo(54, 16);
     ctx.closePath();
     ctx.fill();
 
     // Tail highlight
-    ctx.fillStyle = '#48cae4';
+    ctx.fillStyle = '#4dc8e8';
     ctx.beginPath();
-    ctx.moveTo(28, 0);
-    ctx.lineTo(45, -8);
-    ctx.lineTo(42, 0);
+    ctx.moveTo(30, 0);
+    ctx.lineTo(50, -9);
+    ctx.lineTo(46, 0);
     ctx.closePath();
     ctx.fill();
 
-    // Body
-    const bodyGrad = ctx.createLinearGradient(-28, -14, -28, 14);
-    bodyGrad.addColorStop(0, '#48cae4');
-    bodyGrad.addColorStop(0.35, '#0096c7');
-    bodyGrad.addColorStop(1, '#0077b6');
-    ctx.fillStyle = bodyGrad;
+    // Body gradient
+    const bg = ctx.createLinearGradient(0, -16, 0, 16);
+    bg.addColorStop(0, '#52d0f0');
+    bg.addColorStop(0.3, '#009ec2');
+    bg.addColorStop(1, '#0077b6');
+    ctx.fillStyle = bg;
     ctx.beginPath();
-    ctx.ellipse(0, 0, 34, 14, 0, 0, Math.PI * 2);
+    ctx.ellipse(0, 0, 36, 15, 0, 0, Math.PI * 2);
     ctx.fill();
 
-    // Belly lighter stripe
-    ctx.fillStyle = 'rgba(200,240,255,0.45)';
+    // Belly shimmer
+    ctx.fillStyle = 'rgba(210,248,255,0.42)';
     ctx.beginPath();
-    ctx.ellipse(-2, 5, 22, 7, 0, 0, Math.PI * 2);
+    ctx.ellipse(-2, 6, 23, 8, 0, 0, Math.PI * 2);
     ctx.fill();
 
     // Dorsal fin
     ctx.fillStyle = '#0077b6';
     ctx.beginPath();
-    ctx.moveTo(-8, -14);
-    ctx.quadraticCurveTo(2, -30, 14, -16);
-    ctx.quadraticCurveTo(6, -14, -8, -14);
+    ctx.moveTo(-10, -15);
+    ctx.quadraticCurveTo(2, -33, 16, -16);
+    ctx.quadraticCurveTo(6, -15, -10, -15);
     ctx.fill();
-
-    // Dorsal fin highlight
-    ctx.fillStyle = 'rgba(72,202,228,0.5)';
+    ctx.fillStyle = 'rgba(80,210,240,0.5)';
     ctx.beginPath();
-    ctx.moveTo(-6, -14);
-    ctx.quadraticCurveTo(0, -26, 10, -16);
-    ctx.quadraticCurveTo(4, -14, -6, -14);
+    ctx.moveTo(-7, -15);
+    ctx.quadraticCurveTo(1, -28, 12, -16);
+    ctx.quadraticCurveTo(5, -15, -7, -15);
     ctx.fill();
 
     // Pectoral fin
-    ctx.fillStyle = '#00b4d8';
-    ctx.globalAlpha = 0.8;
+    ctx.fillStyle = '#00aad4';
+    ctx.globalAlpha = 0.78;
     ctx.beginPath();
-    ctx.moveTo(-2, 2);
-    ctx.quadraticCurveTo(-10, 16, 8, 18);
-    ctx.quadraticCurveTo(10, 8, -2, 2);
+    ctx.moveTo(-4, 2);
+    ctx.quadraticCurveTo(-12, 18, 9, 20);
+    ctx.quadraticCurveTo(12, 9, -4, 2);
     ctx.fill();
     ctx.globalAlpha = 1;
 
-    // Scales (arc rows)
-    ctx.strokeStyle = 'rgba(255,255,255,0.25)';
-    ctx.lineWidth = 0.8;
-    for (let si = 0; si < 4; si++) {
-      const sx = -10 + si * 9;
-      ctx.beginPath();
-      ctx.arc(sx, 0, 8, 0.3, Math.PI - 0.3);
-      ctx.stroke();
+    // Scale rows
+    ctx.strokeStyle = 'rgba(255,255,255,0.22)';
+    ctx.lineWidth = 0.9;
+    for (let si = 0; si < 5; si++) {
+      const sx = -14 + si * 10;
+      ctx.beginPath(); ctx.arc(sx, 0, 9, 0.25, Math.PI - 0.25); ctx.stroke();
     }
 
     // Lateral line
-    ctx.strokeStyle = 'rgba(255,255,255,0.3)';
-    ctx.lineWidth = 1;
+    ctx.strokeStyle = 'rgba(255,255,255,0.28)';
+    ctx.lineWidth = 1.1;
     ctx.beginPath();
-    ctx.moveTo(-20, -3);
-    ctx.quadraticCurveTo(0, -5, 22, -2);
+    ctx.moveTo(-22, -4);
+    ctx.quadraticCurveTo(0, -6, 24, -3);
     ctx.stroke();
 
-    // Eye white
+    // Eye
     ctx.fillStyle = '#fff';
-    ctx.beginPath();
-    ctx.arc(-22, -3, 5.5, 0, Math.PI * 2);
-    ctx.fill();
-    // Iris
+    ctx.beginPath(); ctx.arc(-23, -3, 6, 0, Math.PI * 2); ctx.fill();
     ctx.fillStyle = '#023e8a';
-    ctx.beginPath();
-    ctx.arc(-21, -3, 3.5, 0, Math.PI * 2);
-    ctx.fill();
-    // Pupil glint
+    ctx.beginPath(); ctx.arc(-22, -3, 4, 0, Math.PI * 2); ctx.fill();
     ctx.fillStyle = '#fff';
-    ctx.beginPath();
-    ctx.arc(-20, -4.5, 1.3, 0, Math.PI * 2);
-    ctx.fill();
+    ctx.beginPath(); ctx.arc(-21, -4.5, 1.5, 0, Math.PI * 2); ctx.fill();
 
     // Mouth
     ctx.strokeStyle = '#023e8a';
-    ctx.lineWidth = 1.2;
-    ctx.beginPath();
-    ctx.arc(-30, 0, 5, -0.4, 0.4);
-    ctx.stroke();
+    ctx.lineWidth = 1.3;
+    ctx.beginPath(); ctx.arc(-32, 0, 5, -0.45, 0.45); ctx.stroke();
 
     ctx.restore();
   }
 
-  function drawDroplets(dt) {
-    droplets.forEach(d => {
-      d.x += d.vx * dt;
-      d.y += d.vy * dt;
-      d.vy += gravity * 0.4 * dt;
-      d.life -= dt * 1.4;
-      if (d.life > 0) {
+  // ── Arc-based jump state machine ──
+  // The fish follows a parametric arc: x moves linearly from startX to endX,
+  // y follows a ballistic parabola so it looks like a natural U-curve leap.
+  let arcT = 0;         // 0..1 along the arc
+  let arcDur = 0;       // seconds for full arc flight
+  let startX = 0, endX = 0;
+  let peakH = 0;        // how many px above waterY at peak
+  let phase = 'wait';
+  let phaseTimer = 0;
+  let waitDur = 1.8;
+  let globalT = 0;
+
+  // Current fish position & angle
+  let fishX = W * 0.38, fishY = waterY, fishAngle = 0;
+
+  // Submerge trail bubbles
+  let bubbles = [];
+  function spawnBubbles(x, y) {
+    for (let i = 0; i < 8; i++) {
+      bubbles.push({ x: x + (Math.random()-0.5)*18, y: y + Math.random()*12,
+        vy: -(30 + Math.random()*60), vx: (Math.random()-0.5)*18,
+        r: 2 + Math.random()*3, life: 1.0 });
+    }
+  }
+
+  function drawBubbles(dt) {
+    bubbles.forEach(b => {
+      b.x += b.vx * dt; b.y += b.vy * dt; b.life -= dt * 1.1;
+      if (b.life > 0 && b.y < waterY) {
         ctx.save();
-        ctx.globalAlpha = d.life * 0.8;
-        ctx.fillStyle = '#48cae4';
-        ctx.beginPath();
-        ctx.arc(d.x, d.y, d.size * d.life, 0, Math.PI * 2);
-        ctx.fill();
+        ctx.globalAlpha = b.life * 0.55;
+        ctx.strokeStyle = '#90e0ef';
+        ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.arc(b.x, b.y, b.r * b.life, 0, Math.PI*2); ctx.stroke();
         ctx.restore();
       }
     });
-    droplets = droplets.filter(d => d.life > 0 && d.y < H + 20);
+    bubbles = bubbles.filter(b => b.life > 0);
   }
-
-  function drawRings(cx, cy, age, maxAge) {
-    const progress = age / maxAge;
-    if (progress > 1) return;
-    const maxR = 55;
-    const r = maxR * progress;
-    ctx.save();
-    ctx.globalAlpha = (1 - progress) * 0.5;
-    ctx.strokeStyle = '#90e0ef';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.ellipse(cx, cy, r, r * 0.35, 0, 0, Math.PI * 2);
-    ctx.stroke();
-    if (progress < 0.7) {
-      ctx.globalAlpha = (1 - progress / 0.7) * 0.3;
-      ctx.beginPath();
-      ctx.ellipse(cx, cy, r * 0.55, r * 0.2, 0, 0, Math.PI * 2);
-      ctx.stroke();
-    }
-    ctx.restore();
-  }
-
-  // Ripple ring state
-  let entryRingAge = 99, entryRingX = W / 2, entryRingY = waterY;
-  let launchRingAge = 99, launchRingX = W / 2, launchRingY = waterY;
-  const RING_MAX = 1.2;
 
   let lastTime = null;
-  function loop(timestamp) {
-    if (!lastTime) lastTime = timestamp;
-    const dt = Math.min((timestamp - lastTime) / 1000, 0.05);
-    lastTime = timestamp;
-    t += dt;
-    waveOffset += dt * 1.1;
+  function loop(ts) {
+    if (!lastTime) lastTime = ts;
+    const dt = Math.min((ts - lastTime) / 1000, 0.05);
+    lastTime = ts;
+    globalT += dt;
+    waveOffset += dt * 1.05;
 
     ctx.clearRect(0, 0, W, H);
     drawSky();
     drawWater();
+    drawRingsAll(dt);
+    drawBubbles(dt);
 
-    // Update ripple ring ages
-    entryRingAge += dt;
-    launchRingAge += dt;
-    drawRings(launchRingX, launchRingY, launchRingAge, RING_MAX);
-    drawRings(entryRingX, entryRingY, entryRingAge, RING_MAX);
-
-    // Phase machine
     if (phase === 'wait') {
-      // Fish bobs gently at surface with tail wagging
-      fishX = W / 2;
-      fishY = waterY - 6 + Math.sin(t * 2.2) * 3;
-      fishAngle = Math.sin(t * 1.8) * 0.08;
+      // Fish hidden beneath water, timer runs
       phaseTimer += dt;
-      if (phaseTimer >= waitDuration) {
-        // Launch
-        phase = 'launch';
-        phaseTimer = 0;
-        launchVY = -(waterY * 1.35); // strong upward velocity
-        fishVY = launchVY;
-        launchRingX = fishX;
-        launchRingY = waterY;
-        launchRingAge = 0;
-        spawnSplash(fishX, waterY - 4, 1);
+      if (phaseTimer >= waitDur) {
+        // Start a new arc jump
+        phase = 'arc';
+        arcT = 0;
+        arcDur = 1.55 + Math.random() * 0.3;
+        // Alternate direction each jump
+        const goRight = Math.random() > 0.5;
+        startX = goRight ? W * 0.28 : W * 0.72;
+        endX   = goRight ? W * 0.72 : W * 0.28;
+        peakH  = waterY * 0.62; // how high above water surface
+        fishX  = startX;
+        fishY  = waterY;
+        // Spawn launch splash & rings
+        spawnSplash(startX, waterY - 5, goRight ? 60 : -60);
+        spawnRings(startX, waterY);
       }
     }
-    else if (phase === 'air') {
-      fishVY += gravity * dt;
-      fishY += fishVY * dt;
+    else if (phase === 'arc') {
+      arcT += dt / arcDur;
 
-      // Rotate fish realistically: nose up on ascent, nose down on descent
-      const targetAngle = fishVY < 0
-        ? -Math.PI * 0.38   // nose up going up
-        : Math.PI * 0.35;   // nose down coming down
-      fishAngle += (targetAngle - fishAngle) * dt * 5;
-
-      // Re-entry
-      if (fishY >= waterY) {
-        fishY = waterY;
-        phase = 'reentry';
-        phaseTimer = 0;
-        entryRingX = fishX;
-        entryRingY = waterY;
-        entryRingAge = 0;
-        spawnSplash(fishX, waterY - 4, -1);
-      }
-    }
-    else if (phase === 'launch') {
-      // One frame transition into air
-      phase = 'air';
-      fishVY = launchVY;
-    }
-    else if (phase === 'reentry') {
-      phaseTimer += dt;
-      // Fish slides below surface
-      fishY = waterY + phaseTimer * 180;
-      fishAngle += (Math.PI * 0.5 - fishAngle) * dt * 6;
-      if (phaseTimer > 0.32) {
+      if (arcT >= 1.0) {
+        // Entry splash
+        arcT = 1.0;
+        spawnSplash(endX, waterY - 5, (endX > startX ? 40 : -40));
+        spawnRings(endX, waterY);
+        spawnBubbles(endX, waterY + 10);
         phase = 'submerge';
         phaseTimer = 0;
       }
+
+      // Parametric position: x = lerp, y = parabola
+      const p = arcT; // 0..1
+      fishX = startX + (endX - startX) * p;
+      // Parabola: y = waterY - 4*peakH*p*(1-p)  (peaks at p=0.5)
+      fishY = waterY - 4 * peakH * p * (1 - p);
+
+      // Angle: tangent of the arc
+      const dx = endX - startX;
+      const dyDp = -4 * peakH * (1 - 2 * p); // derivative of y w.r.t p
+      const dxDp = dx;
+      // angle = atan2(dyDp, dxDp) — but fish faces direction of travel
+      // Convert: fish drawn facing LEFT (mouth at -x), so rotate by travel angle
+      const travelAngle = Math.atan2(dyDp, dxDp);
+      // On ascent (p < 0.5): nose up  On descent (p > 0.5): nose down
+      fishAngle = travelAngle;
+
+      // Draw fish — clip to sky (above water) portion only
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(0, 0, W, waterY + 4);
+      ctx.clip();
+      // Mirror fish horizontally if going left
+      if (endX < startX) {
+        ctx.translate(fishX, fishY);
+        ctx.scale(-1, 1);
+        ctx.rotate(-fishAngle);
+        ctx.translate(-fishX, -fishY);
+      }
+      drawFish(fishX, fishY, endX > startX ? fishAngle : -fishAngle + Math.PI);
+      ctx.restore();
     }
     else if (phase === 'submerge') {
       phaseTimer += dt;
-      if (phaseTimer >= 0.55) {
-        // Reset for next jump
+      if (phaseTimer >= 0.6) {
         phase = 'wait';
         phaseTimer = 0;
-        fishX = W / 2;
-        fishY = waterY - 6;
-        fishAngle = 0;
-        fishVY = 0;
-        waitDuration = 1.0 + Math.random() * 0.8;
+        waitDur = 1.4 + Math.random() * 1.0;
       }
+      // Don't draw fish — it's underwater
     }
 
-    // Draw droplets
-    drawDroplets(dt);
-
-    // Draw fish (clip below water in reentry/submerge phases)
-    if (phase !== 'submerge') {
-      if (phase === 'reentry') {
-        // Clip so fish disappears into water naturally
-        ctx.save();
-        ctx.beginPath();
-        ctx.rect(0, 0, W, waterY + 8);
-        ctx.clip();
-      }
-      drawFish(fishX, fishY, fishAngle, 1);
-      if (phase === 'reentry') ctx.restore();
-    }
-
+    drawDropletsAll(dt);
     requestAnimationFrame(loop);
   }
 
