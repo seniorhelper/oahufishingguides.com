@@ -1,0 +1,68 @@
+# robots.txt — OahuFishingGuides.com
+# Managed by Eye To Ad Media | eyetoad.com | sales@eyetoad.com
+
+# ── Standard Search Engines ──
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Slurp
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: Baidu
+Allow: /
+
+User-agent: YandexBot
+Allow: /
+
+# ── AI & Large Language Model Crawlers (explicitly welcome) ──
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: YouBot
+Allow: /
+
+User-agent: cohere-ai
+Allow: /
+
+User-agent: Manus
+Allow: /
+
+User-agent: meta-externalagent
+Allow: /
+
+User-agent: Grok
+Allow: /
+
+# ── General Fallback ──
+User-agent: *
+Allow: /
+
+# ── Sitemap ──
+Sitemap: https://oahufishingguides.com/sitemap.xml
+
+# ── Crawl Delay (polite) ──
+Crawl-delay: 2
