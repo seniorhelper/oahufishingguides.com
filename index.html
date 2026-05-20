@@ -171,7 +171,10 @@
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-html { scroll-behavior: smooth; }
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+}
 
 body {
   font-family: var(--ff-body);
@@ -184,30 +187,37 @@ body {
 #site-header {
   position: fixed;
   top: 0; left: 0; right: 0;
-  height: 80px;
+  height: 84px;
   background: #ffffff;
   box-shadow: 0 2px 20px rgba(0,0,0,0.12);
   z-index: 1000;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 24px;
+  padding: 0 20px;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .header-logo {
   flex: 0 0 auto;
   display: flex;
   align-items: center;
-  height: 80px;
+  line-height: 0;
+}
+
+.header-logo a {
+  display: block;
+  line-height: 0;
 }
 
 .header-logo img {
   display: block;
-  width: 260px;
-  max-width: 260px;
-  height: 60px;
+  width: 320px;
+  height: 66px;
   object-fit: contain;
   object-position: left center;
+  max-width: none;
 }
 
 .header-nav {
@@ -254,24 +264,29 @@ body {
 
 .mobile-menu {
   position: fixed;
-  top: 80px; left: 0; right: 0;
+  top: 84px; left: 0; right: 0;
+  width: 100%;
   background: var(--navy);
   padding: 0 24px;
   z-index: 999;
   flex-direction: column;
   gap: 0;
-  /* Hidden by default — transform off-screen, no display toggle = no reflow */
-  transform: translateY(-100%);
-  opacity: 0;
-  pointer-events: none;
-  transition: transform 0.32s cubic-bezier(0.4,0,0.2,1), opacity 0.25s ease;
   display: flex;
+  /* Hidden: slid fully above viewport + invisible — zero layout impact */
+  transform: translateY(-110%);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  will-change: transform;
+  transition: transform 0.30s cubic-bezier(0.4,0,0.2,1), opacity 0.22s ease, visibility 0s linear 0.30s;
 }
 
 .mobile-menu.open {
   transform: translateY(0);
   opacity: 1;
+  visibility: visible;
   pointer-events: auto;
+  transition: transform 0.30s cubic-bezier(0.4,0,0.2,1), opacity 0.22s ease, visibility 0s linear 0s;
 }
 
 .mobile-menu a {
@@ -299,7 +314,7 @@ body {
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  padding-top: 80px;
+  padding-top: 84px;
 }
 
 #hero-video {
@@ -1333,16 +1348,17 @@ table.species-table {
   .footer-banner-inner { flex-direction: column; text-align: center; }
   .hero-btns { flex-direction: column; align-items: center; }
   .about-stats { grid-template-columns: 1fr; }
-  /* Ensure header stays exactly 80px — no shrink */
-  #site-header { height: 80px; min-height: 80px; }
-  .header-logo { height: 80px; }
-  .header-logo img { width: 220px; max-width: 220px; }
+  /* Lock header at exactly 84px on mobile — no exceptions */
+  #site-header { height: 84px !important; min-height: 84px !important; overflow: hidden; }
+  /* Logo: keep readable — 240px on mobile */
+  .header-logo img { width: 240px; height: 54px; }
 }
 
-@media (max-width: 480px) {
-  .hero-title { font-size: 52px; }
-  section { padding: 60px 20px; }
-  .header-logo img { width: 180px; max-width: 180px; }
+@media (max-width: 400px) {
+  .hero-title { font-size: 48px; }
+  section { padding: 60px 16px; }
+  /* Smallest phones — still keep logo visible */
+  .header-logo img { width: 200px; height: 48px; }
 }
 </style>
 </head>
@@ -1353,8 +1369,7 @@ table.species-table {
   <div class="header-logo">
     <a href="#hero">
       <img src="https://raw.githubusercontent.com/seniorhelper/oahufishingguides.com/main/images/oahu-fishing-guides-logo.png"
-           alt="Oahu Fishing Guides Logo"
-           width="260" height="auto">
+           alt="Oahu Fishing Guides Logo">
     </a>
   </div>
 
@@ -1386,6 +1401,7 @@ table.species-table {
 <section id="hero">
   <video id="hero-video" autoplay muted loop playsinline preload="auto"
          poster="https://raw.githubusercontent.com/seniorhelper/oahufishingguides.com/main/images/hawaii-fishing-charter.jpg">
+    <source src="https://github.com/seniorhelper/oahufishingguides.com/raw/main/images/oahu-fishing-guides.mp4" type="video/mp4">
     <source src="https://raw.githubusercontent.com/seniorhelper/oahufishingguides.com/main/images/oahu-fishing-guides.mp4" type="video/mp4">
   </video>
   <div class="hero-overlay"></div>
