@@ -187,16 +187,15 @@ body {
 #site-header {
   position: fixed;
   top: 0; left: 0; right: 0;
-  height: 84px;
+  height: 120px;
   background: #ffffff;
   box-shadow: 0 2px 20px rgba(0,0,0,0.12);
   z-index: 1000;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 20px;
+  padding: 0 24px;
   box-sizing: border-box;
-  overflow: hidden;
 }
 
 .header-logo {
@@ -213,8 +212,9 @@ body {
 
 .header-logo img {
   display: block;
-  width: 320px;
-  height: 66px;
+  width: 480px;
+  height: auto;
+  max-height: 100px;
   object-fit: contain;
   object-position: left center;
   max-width: none;
@@ -264,7 +264,7 @@ body {
 
 .mobile-menu {
   position: fixed;
-  top: 84px; left: 0; right: 0;
+  top: 120px; left: 0; right: 0;
   width: 100%;
   background: var(--navy);
   padding: 0 24px;
@@ -314,7 +314,7 @@ body {
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  padding-top: 84px;
+  padding-top: 120px;
 }
 
 #hero-video {
@@ -799,7 +799,7 @@ table.species-table {
 
 .sidebar-ad {
   position: sticky;
-  top: 96px;
+  top: 136px;
 }
 
 .skyscraper-ad {
@@ -1348,17 +1348,15 @@ table.species-table {
   .footer-banner-inner { flex-direction: column; text-align: center; }
   .hero-btns { flex-direction: column; align-items: center; }
   .about-stats { grid-template-columns: 1fr; }
-  /* Lock header at exactly 84px on mobile — no exceptions */
-  #site-header { height: 84px !important; min-height: 84px !important; overflow: hidden; }
-  /* Logo: keep readable — 240px on mobile */
-  .header-logo img { width: 240px; height: 54px; }
+  /* Mobile: header stays tall, logo stays big */
+  #site-header { height: 120px !important; min-height: 120px !important; }
+  .header-logo img { width: 340px; max-height: 90px; }
 }
 
 @media (max-width: 400px) {
   .hero-title { font-size: 48px; }
   section { padding: 60px 16px; }
-  /* Smallest phones — still keep logo visible */
-  .header-logo img { width: 200px; height: 48px; }
+  .header-logo img { width: 260px; max-height: 80px; }
 }
 </style>
 </head>
